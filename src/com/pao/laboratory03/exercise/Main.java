@@ -1,5 +1,9 @@
 package com.pao.laboratory03.exercise;
-
+import java.util.Scanner;
+import com.pao.laboratory03.model.Subject;
+import com.pao.laboratory03.service.StudentService;
+import java.util.Arrays;
+import java.util.Map;
 import java.util.Scanner;
 
 /**
@@ -69,7 +73,7 @@ public class Main {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
 
-        // TODO: obține instanța StudentService (Singleton)
+        StudentService service = StudentService.getInstance();
 
         System.out.println("=== Sistem Gestiune Studenți ===");
 
@@ -93,32 +97,46 @@ public class Main {
                         String name = scanner.nextLine().trim();
                         System.out.print("Vârsta: ");
                         int age = Integer.parseInt(scanner.nextLine().trim());
-                        // TODO: apelează service.addStudent(name, age)
+
+                        service.addStudent(name, age);
                         System.out.println("Student adăugat cu succes!");
                         break;
 
                     case "2":
                         System.out.print("Nume student: ");
                         String studentName = scanner.nextLine().trim();
-                        System.out.print("Materie (" + /* TODO: afișează Subject.values() */ "PAOJ, BD, SO, RC" + "): ");
+
+                        String availableSubjects = Arrays.toString(Subject.values());
+                        System.out.print("Materie " + availableSubjects + ": ");
                         String subjectStr = scanner.nextLine().trim().toUpperCase();
+
                         System.out.print("Nota (1-10): ");
                         double grade = Double.parseDouble(scanner.nextLine().trim());
-                        // TODO: convertește subjectStr în Subject cu valueOf()
-                        // TODO: apelează service.addGrade(studentName, subject, grade)
+
+                        Subject subject = Subject.valueOf(subjectStr);
+
+                        service.addGrade(studentName, subject, grade);
                         System.out.println("Notă adăugată!");
                         break;
 
                     case "3":
-                        // TODO: apelează service.printAllStudents()
+                        service.printAllStudents();
                         break;
 
                     case "4":
-                        // TODO: apelează service.printTopStudents()
+                        service.printTopStudents();
                         break;
 
                     case "5":
-                        // TODO: apelează service.getAveragePerSubject() și afișează
+                        Map<Subject, Double> averages = service.getAveragePerSubject();
+                        if (averages.isEmpty()) {
+                            System.out.println("Nu există nicio notă înregistrată în sistem.");
+                        } else {
+                            System.out.println("--- Medie pe materie ---");
+                            for (Map.Entry<Subject, Double> entry : averages.entrySet()) {
+                                System.out.printf("%s: %.2f%n", entry.getKey().name(), entry.getValue());
+                            }
+                        }
                         break;
 
                     case "0":
@@ -130,9 +148,9 @@ public class Main {
                         System.out.println("Opțiune invalidă.");
                 }
             } catch (NumberFormatException e) {
-                System.out.println("Eroare: Introdu un număr valid.");
+                System.out.println("Eroare: Introdu un număr valid (fără litere).");
             } catch (IllegalArgumentException e) {
-                System.out.println("Eroare: " + e.getMessage());
+                System.out.println("Eroare: Materia introdusă nu există sau e scrisă greșit.");
             } catch (RuntimeException e) {
                 System.out.println("Eroare: " + e.getMessage());
             }
@@ -141,4 +159,3 @@ public class Main {
         scanner.close();
     }
 }
-
